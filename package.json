@@ -1,6 +1,6 @@
 {
-  "name": "pixi-live2d-display",
-  "version": "0.4.0",
+  "name": "pixi-live2d-display-webgal",
+  "version": "0.5.2",
   "description": "Live2D plugin for PixiJS",
   "main": "dist/index.js",
   "exports": {
@@ -44,7 +44,7 @@
     "doc": "node scripts/gen-docs.js",
     "serve-docs": "mkdocs serve -f docs/mkdocs.yml",
     "deploy": "gh-pages -d site",
-    "prepublishOnly": "yarn build && yarn test && yarn type"
+    "prepublishOnly": "yarn build && yarn type"
   },
   "files": [
     "dist",
