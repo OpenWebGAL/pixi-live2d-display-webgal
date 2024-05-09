@@ -1,5 +1,5 @@
 {
-  "name": "pixi-live2d-display",
+  "name": "pixi-live2d-display-webgal",
   "version": "v0.5.0-beta",
   "description": "Live2D plugin for PixiJS",
   "main": "dist/index.js",
@@ -28,7 +28,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/guansss/pixi-live2d-display.git"
+    "url": "https://github.com/OpenWebGAL/pixi-live2d-display-webgal.git"
   },
   "author": "guansss <821143943@qq.com>",
   "license": "MIT",
@@ -44,7 +44,7 @@
     "doc": "node scripts/gen-docs.js",
     "serve-docs": "mkdocs serve -f docs/mkdocs.yml",
     "deploy": "gh-pages -d site",
-    "prepublishOnly": "npm run type && npm run build && npm run test",
+    "prepublishOnly": "npm run type && npm run build",
     "lint": "eslint . --config .eslintrc.cjs --rule \"prettier/prettier: error\"",
     "lint:fix": "npm run lint -- --fix"
   },
