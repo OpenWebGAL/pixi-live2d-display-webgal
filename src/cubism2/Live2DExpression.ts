@@ -33,23 +33,15 @@ export class Live2DExpression extends AMotion {
 
     /** @override */
     updateParamExe(model: Live2DModelWebGL, time: number, weight: number, motionQueueEnt: unknown) {
-        this.params.forEach(param => {
-            // this algorithm seems to be broken for newer Neptunia series models, have no idea
-            //
-            // switch (param.type) {
-            //     case ParamCalcType.Set:
-            //         model.setParamFloat(param.id, param.value, weight);
-            //         break;
-            //     case ParamCalcType.Add:
-            //         model.addToParamFloat(param.id, param.value * weight);
-            //         break;
-            //     case ParamCalcType.Mult:
-            //         model.multParamFloat(param.id, param.value, weight);
-            //         break;
-            // }
-
-            // this works fine for any model
-            model.setParamFloat(param.id, param.val * weight);
-        });
+        // if (weight - 1 < 0.0001) {
+        //     this.params.forEach((param) => {
+        //         model.setParamFloat(param.id, param.val);
+        //     });
+        // } else {
+            this.params.forEach((param) => {
+                let p = model.getParamFloat(param.id);
+                model.setParamFloat(param.id, param.val * weight + p * (1-weight));
+            });
+        // }
     }
 }

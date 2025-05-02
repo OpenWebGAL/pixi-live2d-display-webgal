@@ -1,6 +1,6 @@
 {
-  "name": "pixi-live2d-display",
-  "version": "0.4.0",
+  "name": "pixi-live2d-display-webgal",
+  "version": "0.5.8",
   "description": "Live2D plugin for PixiJS",
   "main": "dist/index.js",
   "exports": {
@@ -35,7 +35,7 @@
     "setup": "node scripts/setup.js",
     "playground": "vite",
     "test": "node scripts/build-tests.js && npx floss --path=test.build --reporter=tap",
-    "test:ci": "npm run type && npm run build && npm run test",
+    "test:ci": "yarn type && yarn build && yarn test",
     "test:debug": "node scripts/build-tests.js && npx floss --path=test.build -d",
     "build": "rimraf dist && node scripts/build.js",
     "pretype": "node scripts/patch-dts-generator.js",
@@ -44,7 +44,7 @@
     "doc": "node scripts/gen-docs.js",
     "serve-docs": "mkdocs serve -f docs/mkdocs.yml",
     "deploy": "gh-pages -d site",
-    "prepublishOnly": "npm run build && npm run test && npm run type"
+    "prepublishOnly": "yarn build && yarn type"
   },
   "files": [
     "dist",
@@ -52,7 +52,12 @@
   ],
   "types": "types/index.d.ts",
   "peerDependencies": {
-    "pixi.js": "^6"
+    "@pixi/core": "^6",
+    "@pixi/display": "^6",
+    "@pixi/loaders": "^6",
+    "@pixi/math": "^6",
+    "@pixi/sprite": "^6",
+    "@pixi/utils": "^6"
   },
   "devDependencies": {
     "@types/chai": "^4.3.1",

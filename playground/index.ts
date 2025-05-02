@@ -7,16 +7,25 @@ import { Live2DModel } from '../src';
 Live2DModel.registerTicker(Ticker);
 
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-const modelURL = 'https://cdn.jsdelivr.net/gh/Eikanya/Live2d-model/Live2D/Senko_Normals/senko.model3.json';
+const modelURL = '/101002/model.model3.json';
 
 async function main() {
     const app = new Application({
-        resizeTo: window,
+        width:5000,
+        height:5000,
         view: canvas,
     });
     (window as any).app = app;
+    window.__PIXI_APP__ = app;
 
-    const model = await Live2DModel.from(modelURL);
+    const model = await Live2DModel.from(modelURL,{
+        overWriteBounds:{
+            x0:0,
+            y0:-500,
+            x1:0,
+            y1:0
+        }
+    });
 
     app.stage.addChild(model);
 }
