@@ -28,8 +28,8 @@ export class Live2DEyeBlink {
 
     setEyeParams(value: number) {
         this.eyeParamValue = clamp(value, 0, 1);
-        this.coreModel.setParamFloat(this.leftParam, this.eyeParamValue);
-        this.coreModel.setParamFloat(this.rightParam, this.eyeParamValue);
+        this.coreModel.multParamFloat(this.leftParam, this.eyeParamValue);
+        this.coreModel.multParamFloat(this.rightParam, this.eyeParamValue);
     }
 
     update(dt: DOMHighResTimeStamp) {
@@ -49,16 +49,19 @@ export class Live2DEyeBlink {
                 break;
 
             case EyeState.Closing:
-                this.setEyeParams(this.eyeParamValue + dt / this.closingDuration);
+                this.eyeParamValue = this.eyeParamValue - dt / this.closingDuration;
+                this.setEyeParams(Math.max(this.eyeParamValue, 0));
 
                 if (this.eyeParamValue <= 0) {
                     this.eyeState = EyeState.Closed;
                     this.closedTimer = 0;
+                    this.eyeParamValue = 0;
                 }
                 break;
 
             case EyeState.Closed:
                 this.closedTimer += dt;
+                this.setEyeParams(this.eyeParamValue);
 
                 if (this.closedTimer >= this.closedDuration) {
                     this.eyeState = EyeState.Opening;
@@ -66,11 +69,14 @@ export class Live2DEyeBlink {
                 break;
 
             case EyeState.Opening:
-                this.setEyeParams(this.eyeParamValue + dt / this.openingDuration);
+                this.eyeParamValue = this.eyeParamValue + dt / this.closingDuration;
+                this.setEyeParams(Math.min(this.eyeParamValue, 1));
 
                 if (this.eyeParamValue >= 1) {
                     this.eyeState = EyeState.Idle;
+                    this.eyeParamValue = 1;
                 }
+                break;
         }
     }
 }
