@@ -80,10 +80,13 @@ export class Cubism4InternalModel extends InternalModel {
         }
 
         this.breath.setParameters([
-            new BreathParameterData(this.idParamAngleX, 0.0, 15.0, 6.5345, 0.5),
-            new BreathParameterData(this.idParamAngleY, 0.0, 8.0, 3.5345, 0.5),
-            new BreathParameterData(this.idParamAngleZ, 0.0, 10.0, 5.5345, 0.5),
-            new BreathParameterData(this.idParamBodyAngleX, 0.0, 4.0, 15.5345, 0.5),
+            // 暂时不需要控制这些参数, 否则模型会摇头晃脑
+            // new BreathParameterData(this.idParamAngleX, 0.0, 15.0, 6.5345, 0.5),
+            // new BreathParameterData(this.idParamAngleY, 0.0, 8.0, 3.5345, 0.5),
+            // new BreathParameterData(this.idParamAngleZ, 0.0, 10.0, 5.5345, 0.5),
+            // new BreathParameterData(this.idParamBodyAngleX, 0.0, 4.0, 15.5345, 0.5),
+            
+            // 保留对 PARAM_BREATH 参数的控制
             new BreathParameterData(this.idParamBreath, 0.0, 0.5, 3.2345, 0.5),
         ]);
 
