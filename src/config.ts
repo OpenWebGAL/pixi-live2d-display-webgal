@@ -46,6 +46,11 @@ export namespace config {
     export let preserveExpressionOnMotion = true;
 
     export let cubism4 = CubismConfig;
+
+    /**
+     * 旧版表情混合模式
+     */
+    export let legacyExpressionBlendMode = false;
 }
 
 /**
