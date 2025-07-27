@@ -1,6 +1,6 @@
 {
   "name": "pixi-live2d-display-webgal",
-  "version": "0.5.9",
+  "version": "0.5.10",
   "description": "Live2D plugin for PixiJS",
   "main": "dist/index.js",
   "exports": {

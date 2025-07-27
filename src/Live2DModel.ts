@@ -186,40 +186,42 @@ export class Live2DModel<IM extends InternalModel = InternalModel> extends Conta
   }
 
   /**
-   * Last known alpha value to detect changes.
+   * Last known world alpha value to detect changes.
    */
-  private _lastAlpha: number = 1.0;
+  private _lastWorldAlpha: number = 1.0;
 
   /**
-   * Updates the internal AlphaFilter based on the current alpha value.
+   * Updates the internal AlphaFilter based on the current world alpha value.
    * Creates or removes the filter as needed.
    */
   private updateAlphaFilter(): void {
-    if (this.alpha < 1.0) {
+    const currentWorldAlpha = this.worldAlpha;
+    
+    if (currentWorldAlpha < 1.0) {
       // Create AlphaFilter if it doesn't exist
       if (!this._alphaFilter) {
-        this._alphaFilter = new AlphaFilter(this.alpha);
+        this._alphaFilter = new AlphaFilter(currentWorldAlpha);
         this.filters = this.filters ? [...this.filters, this._alphaFilter] : [this._alphaFilter];
       } else {
         // Update existing filter
-        this._alphaFilter.alpha = this.alpha;
+        this._alphaFilter.alpha = currentWorldAlpha;
       }
     } else {
-      // Remove AlphaFilter when alpha is 1.0 (fully opaque)
+      // Remove AlphaFilter when world alpha is 1.0 (fully opaque)
       if (this._alphaFilter && this.filters) {
         this.filters = this.filters.filter(filter => filter !== this._alphaFilter);
         this._alphaFilter = null;
       }
     }
-    this._lastAlpha = this.alpha;
+    this._lastWorldAlpha = currentWorldAlpha;
   }
 
   /**
-   * Checks for alpha changes and updates the filter if needed.
+   * Checks for world alpha changes and updates the filter if needed.
    * Called during rendering to ensure the filter stays in sync.
    */
   private checkAlphaChange(): void {
-    if (this.alpha !== this._lastAlpha) {
+    if (this.worldAlpha !== this._lastWorldAlpha) {
       this.updateAlphaFilter();
     }
   }
