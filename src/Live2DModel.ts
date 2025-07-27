@@ -4,6 +4,7 @@ import type {Live2DFactoryOptions} from '@/factory/Live2DFactory';
 import {Live2DFactory} from '@/factory/Live2DFactory';
 import {Renderer, Texture} from '@pixi/core';
 import {Container} from '@pixi/display';
+import {AlphaFilter} from '@pixi/filter-alpha';
 import {Matrix, ObservablePoint, Point, Rectangle} from '@pixi/math';
 import type {Ticker} from '@pixi/ticker';
 import {InteractionMixin} from './InteractionMixin';
@@ -150,6 +151,12 @@ export class Live2DModel<IM extends InternalModel = InternalModel> extends Conta
 
   protected _autoUpdate = false;
 
+  /**
+   * Internal AlphaFilter to handle alpha transparency for Live2D models.
+   * This filter is applied automatically when the alpha property is changed.
+   */
+  private _alphaFilter: AlphaFilter | null = null;
+
 
   /**
    * Enables automatic updating. Requires {@link Live2DModel.registerTicker} or the global `window.PIXI.Ticker`.
@@ -175,6 +182,45 @@ export class Live2DModel<IM extends InternalModel = InternalModel> extends Conta
       tickerRef?.shared.remove(this.onTickerUpdate, this);
 
       this._autoUpdate = false;
+    }
+  }
+
+  /**
+   * Last known alpha value to detect changes.
+   */
+  private _lastAlpha: number = 1.0;
+
+  /**
+   * Updates the internal AlphaFilter based on the current alpha value.
+   * Creates or removes the filter as needed.
+   */
+  private updateAlphaFilter(): void {
+    if (this.alpha < 1.0) {
+      // Create AlphaFilter if it doesn't exist
+      if (!this._alphaFilter) {
+        this._alphaFilter = new AlphaFilter(this.alpha);
+        this.filters = this.filters ? [...this.filters, this._alphaFilter] : [this._alphaFilter];
+      } else {
+        // Update existing filter
+        this._alphaFilter.alpha = this.alpha;
+      }
+    } else {
+      // Remove AlphaFilter when alpha is 1.0 (fully opaque)
+      if (this._alphaFilter && this.filters) {
+        this.filters = this.filters.filter(filter => filter !== this._alphaFilter);
+        this._alphaFilter = null;
+      }
+    }
+    this._lastAlpha = this.alpha;
+  }
+
+  /**
+   * Checks for alpha changes and updates the filter if needed.
+   * Called during rendering to ensure the filter stays in sync.
+   */
+  private checkAlphaChange(): void {
+    if (this.alpha !== this._lastAlpha) {
+      this.updateAlphaFilter();
     }
   }
 
@@ -361,6 +407,9 @@ export class Live2DModel<IM extends InternalModel = InternalModel> extends Conta
   }
 
   override _render(renderer: Renderer): void {
+    // Check for alpha changes and update filter if needed
+    this.checkAlphaChange();
+
     this.registerInteraction(renderer.plugins.interaction);
 
     // reset certain systems in renderer to make Live2D's drawing system compatible with Pixi
@@ -442,6 +491,9 @@ export class Live2DModel<IM extends InternalModel = InternalModel> extends Conta
 
     // the setters will do the cleanup
     this.autoUpdate = false;
+
+    // Clean up alpha filter
+    this._alphaFilter = null;
 
     this.unregisterInteraction();
 
