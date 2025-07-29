@@ -34,16 +34,21 @@ export class Live2DExpression extends AMotion {
     /** @override */
     updateParamExe(model: Live2DModelWebGL, time: number, weight: number, motionQueueEnt: unknown) {
         this.params.forEach(param => {
-            switch (param.calc) {
-                case "set":
-                    model.setParamFloat(param.id, param.val, weight);
-                    break;
-                case "add":
-                    model.addToParamFloat(param.id, param.val * weight);
-                    break;
-                case "mult":
-                    model.multParamFloat(param.id, param.val, weight);
-                    break;
+            if (config.legacyExpressionBlendMode) {
+                let p = model.getParamFloat(param.id);
+                model.setParamFloat(param.id, param.val * weight + p * (1-weight));
+            } else {
+                switch (param.calc) {
+                    case "set":
+                        model.setParamFloat(param.id, param.val, weight);
+                        break;
+                    case "add":
+                        model.addToParamFloat(param.id, param.val * weight);
+                        break;
+                    case "mult":
+                        model.multParamFloat(param.id, param.val, weight);
+                        break;
+                }
             }
         });
     }
