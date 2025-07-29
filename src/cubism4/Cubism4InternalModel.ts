@@ -1,5 +1,5 @@
 import { InternalModelOptions } from '@/cubism-common';
-import { CommonHitArea, CommonLayout, InternalModel } from '@/cubism-common/InternalModel';
+import { baseBlinkParam, BlinkParam, CommonHitArea, CommonLayout, InternalModel } from '@/cubism-common/InternalModel';
 import { Cubism4ModelSettings } from '@/cubism4/Cubism4ModelSettings';
 import { Cubism4MotionManager } from '@/cubism4/Cubism4MotionManager';
 import {
@@ -12,7 +12,7 @@ import {
     ParamEyeBallY,
 } from '@cubism/cubismdefaultparameterid';
 import { BreathParameterData, CubismBreath } from '@cubism/effect/cubismbreath';
-import { CubismEyeBlink } from '@cubism/effect/cubismeyeblink';
+import { CubismEyeBlink } from './cubismeyeblink';
 import { CubismPose } from '@cubism/effect/cubismpose';
 import { CubismMatrix44 } from '@cubism/math/cubismmatrix44';
 import { CubismModel } from '@cubism/model/cubismmodel';
@@ -92,6 +92,8 @@ export class Cubism4InternalModel extends InternalModel {
 
         this.renderer.initialize(this.coreModel);
         this.renderer.setIsPremultipliedAlpha(true);
+
+        this.setBlinkParam(baseBlinkParam)
     }
 
     protected getSize(): [number, number] {
@@ -268,5 +270,22 @@ export class Cubism4InternalModel extends InternalModel {
 
         (this as Partial<this>).renderer = undefined;
         (this as Partial<this>).coreModel = undefined;
+    }
+
+    setBlinkParam(blinkParam: BlinkParam): void {
+        if (!this.eyeBlink) {
+            return;
+        }
+
+        try {
+            this.eyeBlink._blinkingIntervalSeconds = blinkParam.blinkInterval / 1000;
+            this.eyeBlink._blinkingIntervalRandomSeconds = blinkParam.blinkIntervalRandom / 1000;
+            this.eyeBlink._closingSeconds = blinkParam.closingDuration / 1000;
+            this.eyeBlink._closedSeconds = blinkParam.closedDuration / 1000;
+            this.eyeBlink._openingSeconds = blinkParam.openingDuration / 1000;
+            this.eyeBlink._nextBlinkingTime = this.eyeBlink.determinNextBlinkingTiming();
+        } catch (error) {
+            console.error('Failed to set blink parameters:', error);
+        }
     }
 }

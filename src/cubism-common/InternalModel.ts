@@ -38,6 +38,25 @@ export interface Bounds {
     height: number;
 }
 
+/**
+ * 眨眼参数，毫秒
+ */
+export interface BlinkParam{
+    blinkInterval: number;          // 眨眼间隔
+    blinkIntervalRandom: number;    // 眨眼间隔随机范围
+    closingDuration: number;        // 闭眼
+    closedDuration: number;         // 保持闭眼
+    openingDuration: number;        // 睁眼
+}
+
+export const baseBlinkParam: BlinkParam = {
+    blinkInterval: 24 * 60 * 60 * 1000, // 24小时
+    blinkIntervalRandom: 1000,
+    closingDuration: 100,
+    closedDuration: 50,
+    openingDuration: 150,
+};
+
 export interface InternalModelOptions extends MotionManagerOptions {}
 
 const tempBounds: Bounds = { x: 0, y: 0, width: 0, height: 0 };
@@ -320,4 +339,6 @@ export abstract class InternalModel extends EventEmitter {
      * Draws the model.
      */
     abstract draw(gl: WebGLRenderingContext): void;
+
+    abstract setBlinkParam(blinkParam: BlinkParam): void;
 }

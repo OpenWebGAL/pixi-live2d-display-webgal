@@ -12,6 +12,7 @@ export class Live2DEyeBlink {
     rightParam: number;
 
     blinkInterval: DOMHighResTimeStamp = 4000;
+    blinkIntervalRandom: DOMHighResTimeStamp = 1000;
     closingDuration: DOMHighResTimeStamp = 100;
     closedDuration: DOMHighResTimeStamp = 50;
     openingDuration: DOMHighResTimeStamp = 150;
@@ -24,12 +25,23 @@ export class Live2DEyeBlink {
     constructor(readonly coreModel: Live2DModelWebGL) {
         this.leftParam = coreModel.getParamIndex('PARAM_EYE_L_OPEN');
         this.rightParam = coreModel.getParamIndex('PARAM_EYE_R_OPEN');
+        this.recalculateBlinkInterval();
     }
 
     setEyeParams(value: number) {
         this.eyeParamValue = clamp(value, 0, 1);
         this.coreModel.multParamFloat(this.leftParam, this.eyeParamValue);
         this.coreModel.multParamFloat(this.rightParam, this.eyeParamValue);
+    }
+
+    /**
+     * 计算新的眨眼间隔，包括随机值
+     */
+    recalculateBlinkInterval() {
+        let newBlinkInterval = this.blinkInterval;
+        newBlinkInterval += rand(-1, 1) * this.blinkIntervalRandom;
+        newBlinkInterval = Math.max(newBlinkInterval, 0);
+        this.nextBlinkTimeLeft = newBlinkInterval;
     }
 
     update(dt: DOMHighResTimeStamp) {
@@ -39,12 +51,7 @@ export class Live2DEyeBlink {
 
                 if (this.nextBlinkTimeLeft < 0) {
                     this.eyeState = EyeState.Closing;
-                    this.nextBlinkTimeLeft =
-                        this.blinkInterval +
-                        this.closingDuration +
-                        this.closedDuration +
-                        this.openingDuration +
-                        rand(0, 2000);
+                    this.recalculateBlinkInterval();
                 }
                 break;
 

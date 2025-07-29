@@ -1,5 +1,5 @@
 import { InternalModelOptions } from '@/cubism-common';
-import { CommonHitArea, CommonLayout, InternalModel } from '@/cubism-common/InternalModel';
+import { baseBlinkParam, BlinkParam, CommonHitArea, CommonLayout, InternalModel } from '@/cubism-common/InternalModel';
 import { Cubism2ModelSettings } from './Cubism2ModelSettings';
 import { Cubism2MotionManager } from './Cubism2MotionManager';
 import { Live2DEyeBlink } from './Live2DEyeBlink';
@@ -103,6 +103,8 @@ export class Cubism2InternalModel extends InternalModel {
 
             drawParam.gl.viewport(...this.viewport);
         };
+
+        this.setBlinkParam(baseBlinkParam)
     }
 
     protected getSize(): [number, number] {
@@ -278,5 +280,22 @@ export class Cubism2InternalModel extends InternalModel {
 
         // cubism2 core has a super dumb memory management so there's basically nothing much to do to release the model
         (this as Partial<this>).coreModel = undefined;
+    }
+
+    setBlinkParam(blinkParam: BlinkParam): void {
+        if (!this.eyeBlink) {
+            return;
+        }
+
+        try {
+            this.eyeBlink.blinkInterval = blinkParam.blinkInterval;
+            this.eyeBlink.blinkIntervalRandom = blinkParam.blinkIntervalRandom;
+            this.eyeBlink.closingDuration = blinkParam.closingDuration;
+            this.eyeBlink.closedDuration = blinkParam.closedDuration;
+            this.eyeBlink.openingDuration = blinkParam.openingDuration;
+            this.eyeBlink.recalculateBlinkInterval();
+        } catch (error) {
+            console.error('Failed to set blink parameters:', error);
+        }
     }
 }
