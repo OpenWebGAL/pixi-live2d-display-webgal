@@ -155,7 +155,7 @@ export class Live2DModel<IM extends InternalModel = InternalModel> extends Conta
    * Internal AlphaFilter to handle alpha transparency for Live2D models.
    * This filter is applied automatically when the alpha property is changed.
    */
-  private _alphaFilter: AlphaFilter | null = null;
+  private _alphaFilter: AlphaFilter = new AlphaFilter(1);
 
 
   /**
@@ -196,23 +196,7 @@ export class Live2DModel<IM extends InternalModel = InternalModel> extends Conta
    */
   private updateAlphaFilter(): void {
     const currentWorldAlpha = this.worldAlpha;
-    
-    if (currentWorldAlpha < 1.0) {
-      // Create AlphaFilter if it doesn't exist
-      if (!this._alphaFilter) {
-        this._alphaFilter = new AlphaFilter(currentWorldAlpha);
-        this.filters = this.filters ? [...this.filters, this._alphaFilter] : [this._alphaFilter];
-      } else {
-        // Update existing filter
-        this._alphaFilter.alpha = currentWorldAlpha;
-      }
-    } else {
-      // Remove AlphaFilter when world alpha is 1.0 (fully opaque)
-      if (this._alphaFilter && this.filters) {
-        this.filters = this.filters.filter(filter => filter !== this._alphaFilter);
-        this._alphaFilter = null;
-      }
-    }
+    this._alphaFilter.alpha = currentWorldAlpha;
     this._lastWorldAlpha = currentWorldAlpha;
   }
 
@@ -228,6 +212,8 @@ export class Live2DModel<IM extends InternalModel = InternalModel> extends Conta
 
   constructor(options?: Live2DModelOptions) {
     super();
+
+    this.filters = this.filters ? [...this.filters, this._alphaFilter] : [this._alphaFilter];
 
     this.once('modelLoaded', () => this.init(options));
   }
@@ -493,9 +479,6 @@ export class Live2DModel<IM extends InternalModel = InternalModel> extends Conta
 
     // the setters will do the cleanup
     this.autoUpdate = false;
-
-    // Clean up alpha filter
-    this._alphaFilter = null;
 
     this.unregisterInteraction();
 
