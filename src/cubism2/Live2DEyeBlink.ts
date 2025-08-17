@@ -76,7 +76,7 @@ export class Live2DEyeBlink {
                 break;
 
             case EyeState.Opening:
-                this.eyeParamValue = this.eyeParamValue + dt / this.closingDuration;
+                this.eyeParamValue = this.eyeParamValue + dt / this.openingDuration;
                 this.setEyeParams(Math.min(this.eyeParamValue, 1));
 
                 if (this.eyeParamValue >= 1) {
