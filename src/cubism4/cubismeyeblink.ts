@@ -141,7 +141,7 @@ export class CubismEyeBlink {
     for (let i = 0; i < this._parameterIds.length; ++i) {
       const paramId = this._parameterIds[i];
       if (typeof paramId === 'string') {
-        model.setParameterValueById(paramId, parameterValue);
+        model.multiplyParameterValueById(paramId, parameterValue);
       }
     }
   }
