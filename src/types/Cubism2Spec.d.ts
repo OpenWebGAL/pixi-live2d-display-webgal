@@ -11,7 +11,11 @@ export namespace Cubism2Spec {
         // metadata
         layout?: Layout;
         hit_areas?: HitArea[];
+        init_param?: InitParam[];
+        /** Legacy alias for `init_param` */
         init_params?: InitParam[];
+        init_parts_visible?: InitOpacity[];
+        /** Legacy alias for `init_parts_visible` */
         init_opacities?: InitOpacity[];
 
         // motions
@@ -60,12 +64,16 @@ export namespace Cubism2Spec {
 
     interface InitParam {
         id: string;
-        value: number
+        val?: number;
+        /** Legacy alias for `val`. */
+        value?: number
     }
 
     interface InitOpacity {
         id: string;
-        value: number
+        val?: number;
+        /** Legacy alias for `val`. */
+        value?: number
     }
 
     interface ExpressionJSON {

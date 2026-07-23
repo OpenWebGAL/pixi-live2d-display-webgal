@@ -70,10 +70,12 @@ export class Cubism2InternalModel extends InternalModel {
         super.init();
 
         if (this.settings.initParams) {
-            this.settings.initParams.forEach(({ id, value }) => this.coreModel.setParamFloat(id, value));
+            // Prefer standard field `val`, fallback to legacy `value`
+            this.settings.initParams.forEach(({ id, val, value }) => this.coreModel.setParamFloat(id, val ?? value!));
         }
         if (this.settings.initOpacities) {
-            this.settings.initOpacities.forEach(({ id, value }) => this.coreModel.setPartsOpacity(id, value));
+            // Prefer standard field `val`, fallback to legacy `value`
+            this.settings.initOpacities.forEach(({ id, val, value }) => this.coreModel.setPartsOpacity(id, val ?? value!));
         }
 
         this.coreModel.saveParam();

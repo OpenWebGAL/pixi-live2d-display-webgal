@@ -64,8 +64,17 @@ export class Cubism2ModelSettings extends ModelSettings {
 
         copyArray('object', json, this, 'hit_areas', 'hitAreas');
         copyArray('object', json, this, 'expressions', 'expressions');
-        copyArray('object', json, this, 'init_params', 'initParams');
-        copyArray('object', json, this, 'init_opacities', 'initOpacities');
+        // Prefer standard key `init_param`, fallback to legacy `init_params`
+        copyArray('object', json, this, 'init_param', 'initParams');
+        if (!this.initParams) {
+            copyArray('object', json, this, 'init_params', 'initParams');
+        }
+
+        // Prefer standard key `init_parts_visible`, fallback to legacy `init_opacities`
+        copyArray('object', json, this, 'init_parts_visible', 'initOpacities');
+        if (!this.initOpacities) {
+            copyArray('object', json, this, 'init_opacities', 'initOpacities');
+        }
     }
 
     replaceFiles(replace: (file: string, path: string) => string) {
