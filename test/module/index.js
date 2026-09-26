@@ -9,3 +9,4 @@ export * from './Live2DFactory.test';
 export * from './loaders.test';
 export * from './interaction.test';
 export * from './Live2DModel.test';
+export * from './Cubism2Texture.test';

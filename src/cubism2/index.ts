@@ -9,5 +9,6 @@ export * from './Live2DExpression';
 export * from './Live2DEyeBlink';
 export * from './Live2DPhysics';
 export * from './Live2DPose';
+export * from './cubism2-texture';
 export * from './factory';
 

@@ -1,5 +1,7 @@
 import { InternalModelOptions } from '@/cubism-common';
 import { baseBlinkParam, BlinkParam, CommonHitArea, CommonLayout, InternalModel } from '@/cubism-common/InternalModel';
+import { Texture } from '@pixi/core';
+import { createCubism2Texture } from './cubism2-texture';
 import { Cubism2ModelSettings } from './Cubism2ModelSettings';
 import { Cubism2MotionManager } from './Cubism2MotionManager';
 import { Live2DEyeBlink } from './Live2DEyeBlink';
@@ -35,6 +37,11 @@ export class Cubism2InternalModel extends InternalModel {
     breathParamIndex: number;
 
     textureFlipY = true;
+
+    /** @override */
+    transformTexture(texture: Texture): Texture {
+        return createCubism2Texture(texture);
+    }
 
     /**
      * Number of the drawables in this model.
