@@ -2,6 +2,7 @@ import { LOGICAL_HEIGHT, LOGICAL_WIDTH } from '@/cubism-common/constants';
 import { FocusController } from '@/cubism-common/FocusController';
 import { ModelSettings } from '@/cubism-common/ModelSettings';
 import { MotionManager, MotionManagerOptions } from '@/cubism-common/MotionManager';
+import { Texture } from '@pixi/core';
 import { Matrix } from '@pixi/math';
 import { EventEmitter } from '@pixi/utils';
 import { Mutable } from '../types/helpers';
@@ -283,6 +284,16 @@ export abstract class InternalModel extends EventEmitter {
 
         this.motionManager.destroy();
         (this as Partial<this>).motionManager = undefined;
+    }
+
+    /**
+     * Adapts a texture before it is bound to the core model.
+     * Subclasses may override this to meet the requirements of their core.
+     * @param texture - A loaded texture.
+     * @return The texture to bind, either the given one or a replacement.
+     */
+    transformTexture(texture: Texture): Texture {
+        return texture;
     }
 
     /**

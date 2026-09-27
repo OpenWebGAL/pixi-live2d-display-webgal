@@ -150,7 +150,8 @@ export const setupEssentials: Middleware<Live2DFactoryContext> = async (context,
             throw new TypeError('Missing internal model.');
         }
 
-        live2DModel.textures = await Promise.all(textureLoadings);
+        live2DModel.textures = (await Promise.all(textureLoadings))
+            .map(texture => context.internalModel!.transformTexture(texture));
         live2DModel.emit('textureLoaded', live2DModel.textures);
     } else {
         throw new TypeError('Missing settings.');
