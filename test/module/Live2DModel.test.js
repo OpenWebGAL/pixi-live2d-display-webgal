@@ -132,5 +132,29 @@ describe('Live2DModel', async function() {
         app.render();
     });
 
+    it('should render Cubism 4 models in multiple WebGL contexts', async function() {
+        const app1 = createApp(Application, false);
+        const app2 = createApp(Application, false);
+        const model1 = await createModel(TEST_MODEL4, { app: app1 });
+        const model2 = await createModel(TEST_MODEL4, { app: app2 });
+
+        app1.render();
+        app2.render();
+
+        while (app1.renderer.gl.getError() !== app1.renderer.gl.NO_ERROR) {}
+        while (app2.renderer.gl.getError() !== app2.renderer.gl.NO_ERROR) {}
+
+        app1.render();
+        expect(app1.renderer.gl.getError()).to.equal(app1.renderer.gl.NO_ERROR);
+
+        app2.render();
+        expect(app2.renderer.gl.getError()).to.equal(app2.renderer.gl.NO_ERROR);
+
+        model1.destroy();
+        model2.destroy();
+        app1.destroy();
+        app2.destroy();
+    });
+
     await import('./compat.test');
 });
