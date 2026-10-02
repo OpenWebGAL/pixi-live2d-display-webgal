@@ -23,8 +23,18 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org
+          cache: yarn
+          cache-dependency-path: yarn.lock
 
-      - run: yarn --frozen-lockfile
+      - name: Install dependencies
+        # Retry transient registry failures, but fail after three attempts.
+        run: |
+          for attempt in 1 2 3; do
+            yarn --frozen-lockfile && break
+            if [ "$attempt" -eq 3 ]; then exit 1; fi
+            echo "Dependency installation failed; retrying in 10 seconds..."
+            sleep 10
+          done
       - run: yarn setup
       - run: yarn version --patch --no-git-tag-version
 

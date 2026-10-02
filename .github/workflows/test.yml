@@ -6,29 +6,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v6
         with:
           node-version: 16
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - name: Yarn cache
-        uses: actions/cache@v2
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          cache: yarn
+          cache-dependency-path: yarn.lock
 
       - name: Core cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         id: core-cache
         with:
           path: |
@@ -39,7 +28,14 @@ jobs:
             ${{ runner.os }}-
 
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        # Retry transient registry failures, but fail after three attempts.
+        run: |
+          for attempt in 1 2 3; do
+            yarn --frozen-lockfile && break
+            if [ "$attempt" -eq 3 ]; then exit 1; fi
+            echo "Dependency installation failed; retrying in 10 seconds..."
+            sleep 10
+          done
 
       - name: Setup core
         if: steps.core-cache.outputs.cache-hit != 'true'
