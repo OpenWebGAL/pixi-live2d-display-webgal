@@ -41,6 +41,12 @@ jobs:
         if: steps.core-cache.outputs.cache-hit != 'true'
         run: yarn setup
 
+      - name: Configure Electron sandbox
+        # Electron 13 requires a root-owned setuid helper on Ubuntu runners.
+        run: |
+          sudo chown root:root node_modules/electron/dist/chrome-sandbox
+          sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
+
       - uses: GabrielBB/xvfb-action@v1.0
         with:
           run: yarn test:ci
