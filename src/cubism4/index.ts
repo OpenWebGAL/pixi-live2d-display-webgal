@@ -6,3 +6,4 @@ export * from './Cubism4MotionManager';
 export * from './Cubism4InternalModel';
 export * from './factory';
 export * from './setup';
+export * from './reserve-memory'
