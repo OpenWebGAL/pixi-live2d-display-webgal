@@ -24,6 +24,48 @@ import { Mutable } from '../types/helpers';
 
 const tempMatrix = new CubismMatrix44();
 
+interface ShaderContextState {
+    id: number;
+    shaderSets: CubismShader_WebGL['_shaderSets'];
+}
+
+let shaderContextStates = new WeakMap<WebGLRenderingContext, ShaderContextState>();
+let activeShader: CubismShader_WebGL | undefined;
+let activeShaderContext: { gl: WebGLRenderingContext; id: number } | undefined;
+
+function activateShaderContext(gl: WebGLRenderingContext, id: number): void {
+    const shader = CubismShader_WebGL.getInstance();
+
+    if (activeShader !== shader) {
+        shaderContextStates = new WeakMap();
+        activeShader = shader;
+        activeShaderContext = undefined;
+    }
+
+    if (activeShaderContext?.gl === gl && activeShaderContext.id === id) {
+        return;
+    }
+
+    if (activeShaderContext) {
+        const previous = shaderContextStates.get(activeShaderContext.gl);
+
+        if (previous?.id === activeShaderContext.id) {
+            previous.shaderSets = shader._shaderSets;
+        }
+    }
+
+    let current = shaderContextStates.get(gl);
+
+    if (!current || current.id !== id) {
+        current = { id, shaderSets: [] };
+        shaderContextStates.set(gl, current);
+    }
+
+    shader.setGl(gl);
+    shader._shaderSets = current.shaderSets;
+    activeShaderContext = { gl, id };
+}
+
 export class Cubism4InternalModel extends InternalModel {
     settings: Cubism4ModelSettings;
     coreModel: CubismModel;
@@ -41,6 +83,8 @@ export class Cubism4InternalModel extends InternalModel {
     userData?: CubismModelUserData;
 
     renderer = new CubismRenderer_WebGL();
+
+    protected glContextID = -1;
 
     idParamAngleX = ParamAngleX;
     idParamAngleY = ParamAngleY;
@@ -130,16 +174,17 @@ export class Cubism4InternalModel extends InternalModel {
 
     updateWebGLContext(gl: WebGLRenderingContext, glContextID: number): void {
         // reset resources that were bound to previous WebGL context
+        this.glContextID = glContextID;
         this.renderer.firstDraw = true;
         this.renderer._bufferData = {
             vertex: null,
             uv: null,
             index: null,
         };
+        activateShaderContext(gl, glContextID);
         this.renderer.startUp(gl);
         this.renderer._clippingManager._currentFrameNo = glContextID;
         this.renderer._clippingManager._maskTexture = undefined;
-        CubismShader_WebGL.getInstance()._shaderSets = [];
     }
 
     bindTexture(index: number, texture: WebGLTexture): void {
@@ -246,6 +291,8 @@ export class Cubism4InternalModel extends InternalModel {
     }
 
     draw(gl: WebGLRenderingContext): void {
+        activateShaderContext(gl, this.glContextID);
+
         const matrix = this.drawingMatrix;
         const array = tempMatrix.getArray();
 
